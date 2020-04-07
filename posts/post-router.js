@@ -64,7 +64,6 @@ router.put('/:id',(req, res)=>{
     if(body.title && body.contents){
         db.update(id, body)
         .then(numberOfUpdates => {
-            console.log(numberOfUpdates)
             if(numberOfUpdates > 0 ){
                 db.findById(id)
                 .then( object => {
@@ -78,6 +77,20 @@ router.put('/:id',(req, res)=>{
     }else{
         return res.status(400).json({errorMessage: "Please provide title and contents for the post." })
     }
+})
+
+router.get('/:id/comments', (req,res)=> {
+    const postId = req.params.id;
+    db.findPostComments(postId)
+    .then(comment => {
+        console.log(comment)
+        if(comment.length > 0 ){
+            res.status(200).json(comment)
+        }else{
+            res.status(404).json({message: "The post with the specified ID does not exist."})
+        }
+    })
+    .catch(err => res.status(500).json({error: "The post information could not be retrieved."}))
 })
 
 module.exports = router;
